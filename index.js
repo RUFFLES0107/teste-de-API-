@@ -6,16 +6,40 @@ const express = require("express")
 const app = express()
 const port = 3000
 app.use(express.json())
+const fs = require("fs")
 
-app.get("/ola", (req,res) => {
-    res.json({resposta: "ola mundo"})
+app.post("/clientes", (req, res) => {
+    const cliente = req.body
+
+    try {
+        // abrir arquivo 
+        const bd = JSON.parse(fs.readFileSync("bd.json","utf8"))
+        //adicionar cliente
+        bd.push(cliente)
+        // salvar o arquivo
+        fs.writeFileSync("bd.json", JSON.stringify(bd), "utf8")
+        //resposta
+        res.status(201).json({resposta: "cliente cadastrado!"})
+
+    } catch (erro) {
+        res.status(500).json({erro: erro.message})
+    }
+
 })
 
-app.get("/perfil", (req,res) => {
-    res.json({resposta: "Rafael Klosowski", idade: "16 anos"
-})
+app.get("/ola", (req, res) => {
+    res.json({ resposta: "ola mundo" })
 })
 
-app.listen(port,() => {
+app.get("/perfil", (req, res) => {
+    res.json({
+        resposta: "Rafael Klosowski", idade: "16 anos"
+    })
+})
+
+app.listen(port, () => {
     console.log("API rodando na porta " + port)
 })
+
+
+// http://localhost:3000/perfil
