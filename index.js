@@ -37,9 +37,20 @@ app.get("/perfil", (req, res) => {
     })
 })
 
+app.get("/clientes", (req, res) => {
+    try{
+    // abrir arquivo 
+    const bd = JSON.parse(fs.readFileSync("bd.json","utf8"))
+    res.status(200).json({resposta: bd})
+    }catch{
+        res.status(500).json({erro: erro.message})
+    }
+})
+
 app.listen(port, () => {
     console.log("API rodando na porta " + port)
 })
 
 
 // http://localhost:3000/perfil
+// http://localhost:3000/clientes
