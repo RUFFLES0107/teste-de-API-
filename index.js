@@ -41,11 +41,51 @@ app.get("/clientes", (req, res) => {
     try{
     // abrir arquivo 
     const bd = JSON.parse(fs.readFileSync("bd.json","utf8"))
-    res.status(200).json({resposta: bd})
+      res.status(200).json({resposta: bd})
     }catch{
         res.status(500).json({erro: erro.message})
     }
 })
+
+//encontrar cliente pelo CPF
+
+app.get("/clientes/:cpf", (req, res) => {
+   const cpf = req.params.cpf
+   try { 
+        const bd = JSON.parse(fs.readFileSync("bd.json", "utf8"))
+        if(!cliente){
+        return res.status(404).json({erro: "Cliente com esse CPF nÂo existe no BD!"})
+    }
+        res.status(200).json({resposta: cliente})
+    }catch{
+        res.status(500).json({erro: erro.message})
+}
+})
+
+//deletar cliente 
+
+app.delete("/clientes/:cpf", (req, res) => {
+    // pegar o cpf da rota
+    const cpf = req.params.cpf
+    try {
+        // abrir o banco de dados
+        const bd = JSON.parse(fs.readFileSync("bd.json", "utf8"))
+        // encontrar o índice do cliente a ser excluido
+        const indiceCliente = bd.findIndex((cliente) => cliente.cpf == cpf)
+        // remover o indice da lista
+        if (indiceCliente == -1) {
+            return res.status(404).json({erro: "O cliente não existe"})
+        }
+        bd.splice(indiceCliente, 1)
+        // atualizar o arquivo
+        fs.writeFileSync("bd.json", JSON.stringify(bd), "utf8")
+        // dar uma resposta para o cliente
+        res.status(200).json({resposta: "Cliente excluído com sucesso!"})
+    } catch (error){
+        res.status(500).json({erro: erro.message})
+    }
+})
+
 
 app.listen(port, () => {
     console.log("API rodando na porta " + port)
